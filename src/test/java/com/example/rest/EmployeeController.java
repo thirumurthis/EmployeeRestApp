@@ -3,6 +3,8 @@
 package com.example.rest;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,7 +45,14 @@ public class EmployeeController {
     @RequestMapping(method = RequestMethod.GET, value = "/lastname/{name}")
     public ResponseEntity getByLastName(@PathVariable String name) {
 
-
+        List<Employee> lastNameMatch = null;
+        lastNameMatch =
+                edao.getAllEmployees().stream().filter(a->(name!=null && a.getLastName().toLowerCase().contains(name.toLowerCase())))
+                        .collect(Collectors.toList());
+        if(lastNameMatch!=null && lastNameMatch.size()>0)
+            return new ResponseEntity(lastNameMatch,HttpStatus.OK);
+        else
+            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
 
     }
 
