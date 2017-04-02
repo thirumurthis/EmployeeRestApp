@@ -51,17 +51,35 @@ public class EmployeeController {
                 edao.getAllEmployees().stream().filter(a->(name!=null && a.getLastName().toLowerCase().contains(name.toLowerCase())))
                         .collect(Collectors.toList());
         if(lastNameMatch!=null && lastNameMatch.size()>0)
-       return new ResponseEntity<List<Employee>>(lastNameMatch,HttpStatus.OK);
+       return new ResponseEntity(lastNameMatch,HttpStatus.OK);
         else
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity(null, HttpStatus.NOT_FOUND);
 
     }
 
     // Get employee by title (Week 2)
+    @RequestMapping(method=RequestMethod.GET, value="/title/{value}")
+    public ResponseEntity getByTitle(@PathVariable String value){
+        List<Employee> titleMatch= null;
+        titleMatch = edao.getAllEmployees().stream().filter(a->(value!=null && a.getTitle().toLowerCase().contains(value.toLowerCase())))
+                .collect(Collectors.toList());
+        if(titleMatch!=null && titleMatch.size()>0)
+            return new ResponseEntity(titleMatch, HttpStatus.OK);
+        else return new ResponseEntity(null,HttpStatus.NOT_FOUND);
+    }
 
 
     // Get employee by dept (Week 2)
-
+    @RequestMapping(method=RequestMethod.GET, value="/department/{deptname}")
+    public ResponseEntity getByDept(@PathVariable String deptname){
+        List<Employee> deptNameList = null;
+        deptNameList = edao.getAllEmployees().stream().filter(dept->
+                (deptname!=null && dept.getDept().toLowerCase().contains(deptname.toLowerCase())))
+        .collect(Collectors.toList());
+        if(deptNameList!=null && deptNameList.size()>0)
+            return new ResponseEntity(deptNameList,HttpStatus.OK);
+        else return  new ResponseEntity(null,HttpStatus.NOT_FOUND);
+    }
 
     
     // Add an employee
@@ -86,7 +104,17 @@ public class EmployeeController {
     }
 
     // Delete a employee (Week 3)
-
+    @RequestMapping(method = RequestMethod.DELETE,value = "{id}")
+    public ResponseEntity deleteEmployee(@PathVariable long id){
+        Employee employeeObjToDel = edao.getAllEmployees().stream().filter(empId->(id==empId.getId())).findFirst().orElse(null);
+        if(employeeObjToDel!=null) {
+            edao.getAllEmployees().remove(employeeObjToDel);
+            return new ResponseEntity("Employee: "+id+" deleted successfully!!! ",HttpStatus.OK);
+        }else
+        {
+            return new ResponseEntity(null,HttpStatus.NOT_FOUND);
+        }
+    }
     
 
 }
